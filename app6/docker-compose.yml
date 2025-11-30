@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # --- TU APLICACIÓN PHP ---
+  webapp:
+    build: .
+    container_name: rpg_app
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db_server
+    networks:
+      - rpg_net
+
+  # --- TU BASE DE DATOS ---
+  db_server:
+    image: mysql:5.7
+    container_name: rpg_db_server
+    environment:
+      MYSQL_DATABASE: roleplayinggamedb
+      MYSQL_USER: rpg_user
+      MYSQL_PASSWORD: rpg_password
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # AQUÍ LA MAGIA: Cargamos tu SQL automáticamente al iniciar
+      - ./persistence/bd/roleplayinggamedb.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rpg_net
+
+volumes:
+  mysql_data:
+
+networks:
+  rpg_net:
